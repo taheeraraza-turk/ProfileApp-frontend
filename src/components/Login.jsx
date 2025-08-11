@@ -17,7 +17,11 @@ export default function Login({ setToken, setUser }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, form);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, form, {
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       setToken(res.data.token);
