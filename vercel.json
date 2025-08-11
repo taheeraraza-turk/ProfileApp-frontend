@@ -1,5 +1,6 @@
 {
-   "rewrites": [
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://profile-app-backend.vercel.app/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

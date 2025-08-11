@@ -3,13 +3,12 @@ import axios from 'axios';
 
 export default function ProfilePreview({ token }) {
   const [profile, setProfile] = useState(null);
-  const [image, setImage] = useState(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/profile/me`, {
-          headers: { 'x-auth-token': token }
+          headers: {'Authorization': `Bearer ${token}`}
         });
         setProfile(res.data);
       } catch (err) {
@@ -19,30 +18,12 @@ export default function ProfilePreview({ token }) {
     };
     fetchProfile();
 
-      const savedImage = localStorage.getItem('profileImage');
-  if (savedImage) {
-    setImage(savedImage);
-  }
-
   }, [token]);
 
   if (!profile) return <p>No profile found. Please create your profile first.</p>;
 
   return (
   <div className="profile-preview">
-    {image && (
-      <img
-        src={image}
-        alt="Profile"
-        style={{
-          width: "150px",
-          height: "150px",
-          borderRadius: "50%",
-          objectFit: "cover",
-          marginBottom: "15px"
-        }}
-      />
-    )}
     <h2>{profile.name}</h2>
     <p><strong>Email:</strong> {profile.email}</p>
     <p><strong>Skills:</strong> {profile.skills.join(', ')}</p>

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-
 import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -23,11 +22,28 @@ function App() {
       <Navbar token={token} logout={logout} >{user}</Navbar>
       <div className="container">
         <Routes>
-          <Route path="/" element={token ? <Navigate to="/profile" /> : <Navigate to="/login" />} />
+          {/* Home redirects to login if not authenticated */}
+          <Route 
+            path="/" 
+            element={token ? <Navigate to="/profile" /> : <Navigate to="/login" />} 
+          />
+
+          {/* Public routes (no token needed) */}
           <Route path="/login" element={<Login setToken={setToken} setUser={setUser} />} />
           <Route path="/register" element={<Register setToken={setToken} setUser={setUser} />} />
-          <Route path="/profile" element={token ? <ProfileForm token={token} /> : <Navigate to="/login" />} />
-          <Route path="/preview" element={token ? <ProfilePreview token={token} /> : <Navigate to="/login" />} />
+
+          {/* Protected routes (require token) */}
+          <Route 
+            path="/profile" 
+            element={token ? <ProfileForm token={token} /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/preview" 
+            element={token ? <ProfilePreview token={token} /> : <Navigate to="/login" />} 
+          />
+
+          {/* Catch-all route */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </Router>

@@ -10,13 +10,14 @@ export default function ProfileForm({ token }) {
     github: ''
   });
   const [message, setMessage] = useState('');
-  const [image, setImage] = useState(null);
  
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/profile/me`, {
-          headers: { 'x-auth-token': token }
+          headers: {  
+            'Authorization': `Bearer ${token}` 
+          }
         });
         if (res.data) {
           setProfile({
@@ -33,10 +34,7 @@ export default function ProfileForm({ token }) {
       }
     };
     fetchProfile();
-    const savedImage = localStorage.getItem('profileImage');
-  if (savedImage) {
-    setImage(savedImage);
-  }
+    
   }, [token]);
 
   const handleChange = e => {
@@ -59,19 +57,6 @@ export default function ProfileForm({ token }) {
     setProfile({ ...profile, projects: newProjects });
   };
 
-const handleImageChange = e => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImage(reader.result);
-      localStorage.setItem('profileImage', reader.result);
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
-
   const handleSubmit = async e => {
     e.preventDefault();
     try {
@@ -84,7 +69,7 @@ const handleImageChange = e => {
       };
 
       await axios.post(`${import.meta.env.VITE_API_URL}/profile`, data, {
-        headers: { 'x-auth-token': token }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       setMessage('Profile saved successfully!');
     } catch (err) {
@@ -137,18 +122,6 @@ const handleImageChange = e => {
               Remove
             </button>
           )}
-          
-          <label>Profile Image</label>
-<input type="file" accept="image/*" onChange={handleImageChange} />
-{image && (
-  <div style={{ margin: "10px 0" }}>
-    <img
-      src={image}
-      alt="Profile Preview"
-      style={{ width: "150px", height: "150px", borderRadius: "50%", objectFit: "cover" }}
-    />
-    </div>
-)}
 
         </div>
       ))}
