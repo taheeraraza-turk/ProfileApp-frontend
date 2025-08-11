@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import api from './api'; // Using the centralized axios instance
+import api from '../api'; // Using the centralized axios instance
 
 export default function Login({ setToken, setUser }) {
   const [form, setForm] = useState({ email: '', password: '' });

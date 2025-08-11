@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from './api'; // Use centralized axios instance
+import api from '../api'; // Use centralized axios instance
 import { FaEye, FaEyeSlash } from 'react-icons/fa';  // Import eye icons
 import { useNavigate } from 'react-router-dom';
 
