@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from './api'; // Use centralized axios instance
 import { FaEye, FaEyeSlash } from 'react-icons/fa';  // Import eye icons
 import { useNavigate } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ export default function Register({ setToken, setUser }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/register`, form);
+       const res = await api.post('/auth/register', form);
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       setToken(res.data.token);
