@@ -86,14 +86,15 @@ export default function Login({ setToken, setUser }) {
             required
             autoComplete="current-password"
           />
-          <button
-            type="button"
-            className="password-toggle"
-            onClick={togglePassword}
-            aria-label={showPassword ? 'Hide password' : 'Show password'}
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
-          </button>
+          <span
+                    className="password-toggle-icon"
+                    onClick={togglePassword}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
         </div>
       </div>
 
