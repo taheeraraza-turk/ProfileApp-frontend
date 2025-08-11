@@ -2,8 +2,8 @@ import axios from 'axios';
 
 // Create axios instance with default settings
 const api = axios.create({
-  baseURL: process.env.NODE_ENV === 'development' 
-    ? 'http://localhost:5000/api' 
+  baseURL: (import.meta.env && import.meta.env.MODE === 'development')
+    ? 'http://localhost:5000/api'
     : 'https://profile-app-backend.vercel.app/api',
   timeout: 10000, // 10 seconds
   headers: {
