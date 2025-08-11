@@ -1,34 +1,56 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';  // Import eye icons
-import { useNavigate } from 'react-router-dom'; 
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import api from './api'; // Using the centralized axios instance
 
 export default function Login({ setToken, setUser }) {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Toggle password visibility
-    const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
+  const navigate = useNavigate();
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError(''); // Clear error when user types
+  };
 
   const togglePassword = () => setShowPassword(prev => !prev);
 
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
+    
+    // Basic validation
+    if (!form.email || !form.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    setIsLoading(true); // Start loading
+
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, form, {
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
+      // Use the centralized api instance instead of direct axios
+      const res = await api.post('/auth/login', form);
+      
+      // Store authentication data
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
+      
+      // Update state
       setToken(res.data.token);
       setUser(res.data.user);
+      
+      // Redirect
       navigate('/preview');
     } catch (err) {
-      setError(err.response?.data?.msg || 'Login failed');
+      // Enhanced error handling
+      const errorMessage = err.response?.data?.msg || 
+                         err.message || 
+                         'Login failed. Please try again.';
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false); // End loading
     }
   };
 
@@ -36,36 +58,52 @@ export default function Login({ setToken, setUser }) {
     <form onSubmit={handleSubmit} className="auth-form">
       <h2>Login 👁️</h2>
       {error && <p className="error">{error}</p>}
-      <input
-        name="email"
-        type="email"
-        placeholder="Email"
-        value={form.email}
-        onChange={handleChange}
-        required
-      />
-
-      <div className="password-input-wrapper">
+      
+      <div className="form-group">
+        <label htmlFor="email">Email</label>
         <input
-          name="password"
-          type={showPassword ? 'text' : 'password'}
-          placeholder="Password"
-          value={form.password}
+          id="email"
+          name="email"
+          type="email"
+          placeholder="Enter your email"
+          value={form.email}
           onChange={handleChange}
           required
+          autoComplete="username"
         />
-        <span
-          className="password-toggle-icon"
-          onClick={togglePassword}
-          role="button"
-          tabIndex={0}
-          aria-label="Toggle password visibility"
-        >
-          {showPassword ? <FaEyeSlash /> : <FaEye />}
-        </span>
       </div>
 
-      <button type="submit">Login</button>
+      <div className="form-group">
+        <label htmlFor="password">Password</label>
+        <div className="password-input-wrapper">
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Enter your password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            autoComplete="current-password"
+          />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={togglePassword}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        disabled={isLoading}
+        className={isLoading ? 'loading' : ''}
+      >
+        {isLoading ? 'Logging in...' : 'Login'}
+      </button>
     </form>
   );
 }
